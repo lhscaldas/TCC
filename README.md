@@ -1,1 +1,1 @@
-# Controle de um navio autônomo para contramedidas de minagem utilizando o MOOS-IvP
+# Controle de um Navio Autônomo para Contramedidas de Minagem Utilizando o MOOS-IvP
