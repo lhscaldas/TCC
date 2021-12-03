@@ -79,7 +79,7 @@ class pTrajectPID(pymoos.comms):
 
         self.run(self.server, self.port, self.name)
         pymoos.set_moos_timewarp(params['MOOSTimeWarp'])
-        self.dt=0.1
+        self.dt=0.5
 
         dt=self.dt
         self.coursePID = myPID(Kp=params['yaw_kp']/5, Ki=params['yaw_ki']/5, Kd=params['yaw_kd']/5, dt=dt, max_output=params['max_rudder'])
@@ -139,7 +139,7 @@ class pTrajectPID(pymoos.comms):
         self.send('DESIRED_ROTATION_1', self.desired_rotation)
         self.send('DESIRED_ROTATION_2', self.desired_rotation)
 
-    def debug(self, dt):
+    def debug(self):
         print(" ")
         print(" ")
         print(" ")

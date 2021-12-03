@@ -357,7 +357,7 @@ class pEKF(pymoos.comms):
 
 
 if __name__ == "__main__":
-    file = "EKF/moos/alfa.moos" # sys.argv[1] 
+    file = sys.argv[1] 
     params=MoosReader(file,"pEKF")
     PIDcontrol = pEKF(params)
     PIDcontrol.iterate()
