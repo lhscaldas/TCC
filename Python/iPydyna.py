@@ -81,17 +81,16 @@ class Ship(pymoos.comms):
         return True
 
     def on_desired_message(self, msg):
-        """Special callback for Desired"""
         if msg.key() == 'DESIRED_ROTATION_1':
-            self.desired_rotation_0 = msg.double()
-        elif msg.key() == 'DESIRED_ROTATION_2':
             self.desired_rotation_1 = msg.double()
+        elif msg.key() == 'DESIRED_ROTATION_2':
+            self.desired_rotation_2 = msg.double()
         elif msg.key() == 'DESIRED_ROTATION_3':
-            self.desired_rotation_4 = msg.double()
+            self.desired_rotation_3 = msg.double()
         elif msg.key() == 'DESIRED_RUDDER_1':
-            self.desired_rudder = msg.double()
+            self.desired_rudder_1 = msg.double()
         elif msg.key() == 'DESIRED_RUDDER_2':
-            self.desired_rudder = msg.double()
+            self.desired_rudder_2 = msg.double()
         return True
 
     def send(self, key, value):
@@ -115,7 +114,6 @@ class Ship(pymoos.comms):
         print(" ")
         print(" ")
         print("iPydyna Debug")
-        print(f"Time Warp = {pymoos.get_moos_timewarp()}")
 
     def calculate_heading(self):
         real_heading = 0
@@ -153,7 +151,7 @@ class Ship(pymoos.comms):
             self.real_heading = self.calculate_heading()
 
             self.update()
-            # self.debug()
+            self.debug()
 
         
 if __name__ == "__main__":
