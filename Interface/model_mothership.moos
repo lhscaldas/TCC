@@ -1,0 +1,247 @@
+//-------------------------------------------------
+// NAME: L. H. S. Caldas, USP
+// FILE: shoreside.moos
+//-------------------------------------------------
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = mothership
+
+MOOSTimeWarp = 10
+
+// Sepetiba
+LatOrigin  = -22.93705
+LongOrigin = -43.83953
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false, ExtraProcessParams=one
+  Run = pShare        @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  //Run = uSimRadar @ NewConsole = false
+  Run = uXMS            @ NewConsole = false
+  Run = uFldNodeComms      @ NewConsole = false
+  Run = pContactMgrV20     @ NewConsole = false
+
+  // Run = uSimMarine         @ NewConsole = false
+  // Run = pNodeReporter   @ NewConsole = false
+
+  one = --size=800x600
+
+  //Run = uSimRadar        @ NewConsole = false
+  //Run = uSimLidar         @ NewConsole = false
+}
+
+//------------------------------------------------------
+// uSimMarine Configuration Block  (Created from plugin)
+
+ProcessConfig = uSimMarine
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  START_POS = 700,-950, 0, 0
+  PREFIX    = NAV
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick    = 2
+  CommsTick	 = 2
+
+  platform_type   = KAYAK
+  platform_color  = gray
+  platform_length = 150
+  //alt_nav_prefix=REAL_
+  //alt_nav_name   = _REAL
+  //cross_fill_policy=fill-empty
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 4
+  CommsTick = 4
+  source = uSimRadar, uSimLidar
+  //display_all = true
+
+}
+
+//------------------------------------------
+// pShare config block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:9200
+}
+
+//--------------------------------------------------
+// pHostInfo configuration block from plugin
+
+ProcessConfig = pHostInfo
+{
+  AppTick 	= 1
+  CommsTick 	= 1
+
+   default_hostip_force = localhost
+
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  qbridge  = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  qbridge  = STATION_KEEP, APPCAST_REQ
+  qbridge  = MOOS_MANUAL_OVERRIDE
+  qbridge  = END
+  qbridge  = RETURN
+
+  bridge   = src=USR_RANGE_REPORT_$V, alias=USR_RANGE_REPORT
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = itaguai.tif
+
+  set_pan_x            = -90
+  set_pan_y            = -220
+  zoom                 = 2
+  vehicle_shape_scale  = 5
+  hash_delta           = 100
+  hash_shade           = 0.4
+  hash_viewable        = true
+
+  trails_point_size   = 2
+  trails_color         = red
+  trails_length       = 200
+  vehicles_name_mode  = names
+  vehicles_name_color = black
+  center_view         = active
+
+  //vcolor = alpha=dodgerblue
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+
+  //datum_viewable = true
+  //datum_size     = 18
+  //gui_size = small
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
+  button_one   = END_ALL=false
+
+  button_two   = RETURN  # RETURN_ALL=true
+  button_two   = STATION_KEEP_ALL=false
+  button_two   = END_ALL=false
+
+  button_three = STATION  # STATION_KEEP_ALL=true
+
+  button_four = END # END_ALL=true
+  button_four  = RETURN_ALL=false # STATION_KEEP_ALL=false
+
+  infocast_viewable=true
+}
+
+//---------------------------------------------------------
+// uSimRadar Config Block
+ProcessConfig = uSimRadar
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  push_distance = bravo = 50
+  push_distance = alfa = 50
+  push_distance = mother = 200
+  ping_wait     = alfa = 32  
+  ping_color    = white
+  echo_color    = chartreuse
+
+  report_vars   = both
+
+  // Configuring Artificial Noise                               
+  rn_algorithm   = uniform,pct=0.04
+
+}
+
+//---------------------------------------------------------
+// uSimRadar Config Block
+ProcessConfig = uSimLidar
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  push_distance = bravo = 50
+  push_distance = alfa = 50
+  push_distance = mother = 200
+  ping_wait     = alfa = 32  
+  ping_color    = white
+  echo_color    = chartreuse
+
+  report_vars   = both
+
+  // Configuring Artificial Noise                               
+  rn_algorithm   = uniform,pct=0.04
+
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+           comms_range = 2000
+        critical_range = 25
+      min_msg_interval = 20
+        max_msg_length = 1000
+                groups = true
+  view_node_rpt_pulses = false
+}
+
+//--------------------------------------------------------
+// pContactMgrV20 Configuration Block (Created from Plugin)
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  contact_max_age = 600
+  display_radii   = false
+}

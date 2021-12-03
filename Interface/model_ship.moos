@@ -1,0 +1,342 @@
+//-------------------------------------------------
+// NAME: L. H. S. Caldas, USP
+// FILE: main.moos
+//-------------------------------------------------
+
+ServerHost = localhost
+ServerPort = 9001
+Community  = alfa
+
+MOOSTimeWarp = 10
+
+// Sepetiba
+LatOrigin  = -22.93705
+LongOrigin = -43.83953
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = uXMS            @ NewConsole = false
+  //Run = pLogger      @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = ./iPydyna2.py    @ NewConsole = false
+  Run = ./pTrajectPID.py @ NewConsole = false
+  // Run = ./plotter.py    @ NewConsole = false
+  Run = pSimIMU   @ NewConsole = false
+  Run = pSimGPS    @ NewConsole = false
+  Run = pSimDVL    @ NewConsole = false
+  Run = pSimGyro    @ NewConsole = false
+  Run = pSensor    @ NewConsole = false
+  //Run = iRemoteMod    @ NewConsole = true
+  Run = pShare @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldNodeBroker  @ NewConsole = false
+  Run = uTimerScript       @ NewConsole = false ~ uTimerScript_PING
+  Run = pContactMgrV20    @ NewConsole = false
+  //Run = uSimRadar        @ NewConsole = false
+  //Run = uSimLidar        @ NewConsole = false
+
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 4
+  CommsTick = 4
+  //var    =   USR_RANGE_REQUEST, USR_RANGE_REPORT, USL_RANGE_REQUEST, USL_RANGE_REPORT
+  //display_all = true
+  source = uSimRadar, pContactMgrV20, uSimLidar
+
+}
+
+//---------------------------------------------------------
+// uSimRadar Config Block
+ProcessConfig = uSimRadar
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  push_distance = alfa = 40000
+  pull_distance = alfa = 40000
+  ping_wait     = alfa = 0 
+  //ping_color    = white
+  //echo_color    = chartreuse
+
+  report_vars   =  short
+  ground_truth = true
+
+  // Configuring Artificial Noise 
+  rn_algorithm = gaussian                        
+  rn_gaussian_sigma   = 0.03
+
+}
+
+//---------------------------------------------------------
+// uSimRadar Config Block
+ProcessConfig = uSimLidar
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  push_distance = alfa = 1000
+  pull_distance = alfa = 1000
+  ping_wait     = alfa = 0 
+  //ping_color    = white
+  //echo_color    = chartreuse
+
+  report_vars   =  short
+  ground_truth = true
+
+  // Configuring Artificial Noise   
+  rn_algorithm = gaussian                        
+  rn_gaussian_sigma   = 0.05
+
+}
+
+
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:9201
+}
+
+//--------------------------------------------------
+// pHostInfo configuration block
+
+ProcessConfig = pHostInfo
+{
+  AppTick 	= 1
+  CommsTick 	= 1
+
+   default_hostip_force = localhost
+
+}
+
+//--------------------------------------------------
+// uFldNodeBroker configuration block from plugin
+
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  try_shore_host = pshare_route=localhost:9200
+
+  bridge = src=VIEW_POLYGON
+  bridge = src=VIEW_POINT
+  bridge = src=VIEW_SEGLIST
+  bridge = src=APPCAST
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+  //bridge =  src=USL_RANGE_REQUEST
+  //bridge =  src=USR_RANGE_REQUEST
+}
+
+//------------------------------------------------
+// iPydyna config block
+
+ProcessConfig = iPydyna
+{
+   AppTick   = 4
+   CommsTick = 4
+START_X = 900.0 
+START_Y = -900.0 
+START_HEADING = 90.0 
+}
+
+//------------------------------------------------
+// pTrajectPID config block
+
+ProcessConfig = pTrajectPID
+{
+   AppTick   = 1
+   CommsTick = 1
+   yaw_kp = 3.97
+   yaw_ki = 0.269
+   yaw_kd = 3.95
+   max_rudder = 35
+   spd_kp = 4.944
+   spd_ki = 0.1629
+   spd_kd = 0
+   max_rotation = 17.5
+}
+
+//------------------------------------------------
+// pSensor config block
+
+ProcessConfig = pSensor
+{
+   AppTick   = 4
+   CommsTick = 4
+   w_dvl_speed = 1
+   w_imu_speed = 1
+   w_gps_speed = 1
+   w_imu_pos = 1
+   w_gps_pos = 1
+   w_imu_hdg = 1
+   w_gyro_hdg = 1
+}
+
+//------------------------------------------------
+// pSimIMU config block
+
+ProcessConfig = pSimIMU
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
+
+//------------------------------------------------
+// pSimGPS config block
+
+ProcessConfig = pSimGPS
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
+//------------------------------------------------
+// pSimGyro config block
+
+ProcessConfig = pSimGyro
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
+//------------------------------------------------
+// pSimDVL config block
+
+ProcessConfig = pSimDVL
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
+//-----------------------------------------------------------------
+// iRemote config block
+
+ProcessConfig = iRemote
+{
+  CustomJournal = Name = DESIRED_RUDDER,Key =6, History = 10,Period = 0
+  CustomSummary = DESIRED_THRUST
+  CustomKey = 2 : JANITOR_SWITCH @ "ACTUATION:OFF"
+}
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  SyncLog = true
+
+  // For variables that are published in a bundle on their first post,
+  // explicitly declare their logging request
+  
+  Log = USR_RANGE_REPORT @ 0 NOSYNC
+  Log = USR_RANGE_REPORT_GT @ 0 NOSYNC
+  Log = USL_RANGE_REPORT @ 0 NOSYNC
+
+  File = Log
+  FileTimeStamp = false
+
+  //Log = DESIRED_HEADING @ 0 NOSYNC
+  //Log = REAL_HEADING @ 0 NOSYNC
+  //Log = IMU_HEADING @ 0 NOSYNC
+  //Log = GYRO_HEADING @ 0 NOSYNC
+  
+  //Log = DESIRED_SPEED @ 0 NOSYNC
+  //Log = IMU_SPEED @ 0 NOSYNC
+  //Log = GPS_SPEED @ 0 NOSYNC
+  //Log = REAL_SPEED @ 0 NOSYNC
+  //Log = DVL_SPEED @ 0 NOSYNC
+
+
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  bhv_dir_not_found_ok = true
+  ok_skew = any
+
+  behaviors  = alfa.bhv
+  domain     = course:0:359:360
+  domain     = speed:0:7:99
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick    = 2
+  CommsTick	 = 2
+
+  platform_type   = KAYAK
+  platform_color  = red
+  platform_length = 15
+  //alt_nav_prefix=REAL_
+  //alt_nav_name   = _REAL
+  //cross_fill_policy=fill-empty
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript_PING
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  PAUSED     = false
+  RESET_MAX  = nolimit
+  RESET_TIME = end
+  //CONDITION  = (NAV_SPEED > 0)
+
+  EVENT = var=USR_RANGE_REQUEST, val="name=alfa", time=27:37
+  EVENT = var=USL_RANGE_REQUEST, val="name=alfa", time=27:37
+}
+
+//--------------------------------------------------------
+// pContactMgrV20 Configuration Block (Created from Plugin)
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age = 3600
+  display_radii   = true
+
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+
+
+}
+
