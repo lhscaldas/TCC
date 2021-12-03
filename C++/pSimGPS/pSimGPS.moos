@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pSimGPS config block
+
+ProcessConfig = pSimGPS
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
